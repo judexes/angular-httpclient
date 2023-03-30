@@ -1,42 +1,42 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { TutorialService } from 'src/app/services/tutorial.service';
+import { PostService } from 'src/app/services/post.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Tutorial } from 'src/app/models/tutorial.model';
+import { Post } from 'src/app/models/post.model';
 
 @Component({
-  selector: 'app-tutorial-details',
-  templateUrl: './tutorial-details.component.html',
-  styleUrls: ['./tutorial-details.component.css']
+  selector: 'app-post-details',
+  templateUrl: './post-details.component.html',
+  styleUrls: ['./post-details.component.css']
 })
-export class TutorialDetailsComponent implements OnInit {
+export class PostDetailsComponent implements OnInit {
 
   @Input() viewMode = false;
 
-  @Input() currentTutorial: Tutorial = {
+  @Input() currentPost: Post = {
     title: '',
     description: '',
     published: false
   };
-  
+
   message = '';
 
   constructor(
-    private tutorialService: TutorialService,
+    private postService: PostService,
     private route: ActivatedRoute,
     private router: Router) { }
 
   ngOnInit(): void {
     if (!this.viewMode) {
       this.message = '';
-      this.getTutorial(this.route.snapshot.params["id"]);
+      this.getPost(this.route.snapshot.params["id"]);
     }
   }
 
-  getTutorial(id: string): void {
-    this.tutorialService.get(id)
+  getPost(id: string): void {
+    this.postService.get(id)
       .subscribe({
         next: (data) => {
-          this.currentTutorial = data;
+          this.currentPost = data;
           console.log(data);
         },
         error: (e) => console.error(e)
@@ -45,43 +45,43 @@ export class TutorialDetailsComponent implements OnInit {
 
   updatePublished(status: boolean): void {
     const data = {
-      title: this.currentTutorial.title,
-      description: this.currentTutorial.description,
+      title: this.currentPost.title,
+      description: this.currentPost.description,
       published: status
     };
 
     this.message = '';
 
-    this.tutorialService.update(this.currentTutorial.id, data)
+    this.postService.update(this.currentPost.id, data)
       .subscribe({
         next: (res) => {
           console.log(res);
-          this.currentTutorial.published = status;
+          this.currentPost.published = status;
           this.message = res.message ? res.message : 'The status was updated successfully!';
         },
         error: (e) => console.error(e)
       });
   }
 
-  updateTutorial(): void {
+  updatePost(): void {
     this.message = '';
 
-    this.tutorialService.update(this.currentTutorial.id, this.currentTutorial)
+    this.postService.update(this.currentPost.id, this.currentPost)
       .subscribe({
         next: (res) => {
           console.log(res);
-          this.message = res.message ? res.message : 'This tutorial was updated successfully!';
+          this.message = res.message ? res.message : 'This post was updated successfully!';
         },
         error: (e) => console.error(e)
       });
   }
 
-  deleteTutorial(): void {
-    this.tutorialService.delete(this.currentTutorial.id)
+  deletePost(): void {
+    this.postService.delete(this.currentPost.id)
       .subscribe({
         next: (res) => {
           console.log(res);
-          this.router.navigate(['/tutorials']);
+          this.router.navigate(['/posts']);
         },
         error: (e) => console.error(e)
       });
